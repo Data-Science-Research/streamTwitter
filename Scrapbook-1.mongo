@@ -1,0 +1,60 @@
+db.allbancos.find({}, {"_id": 0, "text": 1}).limit(10);
+db.allbancos.find({}, {"_id": 0, "text": 1}).sort({'_id': -1}).limit(10);
+db.annotation_label.find({}, {"_id": 0, "labels": 1}).sort({'_id': -1}).limit(10);
+
+//Contagens
+db.annotation_label.count();
+db.annotation.count();
+db.allbancos.count();
+db.labels.count();
+db.bio_tokens.count();
+
+//Contar o número de Produtos agrupados
+db.labels.aggregate( [ { $unwind: { path: "$produtos", preserveNullAndEmptyArrays: false } }, 
+                                  { $project: {_id: 0, "text": 0, "produtos": 1}},
+                                  { $group: {_id: '$produtos', count: { $sum: 1 }}},
+                                  { $sort: {"count": -1}} ] )
+
+//Contar o número de Problemas agrupados
+db.labels.aggregate( [ { $unwind: { path: "$problemas", preserveNullAndEmptyArrays: false } }, 
+                                  { $project: {_id: 0, "text": 0, "problemas": 1}},
+                                  { $group: {_id: '$problemas', count: { $sum: 1 }}},
+                                  { $sort: {"count": -1}} ] )
+
+//Contar o número de Produtos e Problemas
+db.labels.distinct("produtos")
+db.labels.distinct("problemas")
+
+db.labels.find({'id' : 60601})
+
+db.labels.getIndexes()
+
+db.annotation.getIndexes()
+
+db.bioSchema.dropIndex("_id_")
+
+db.allbancos.find({"id_str" : "1357437998749659136"}) 
+
+db.allbancos.find({}, {"_id": 0, "text": 1}).sort({'_id': -1}).limit(10);
+
+db.allbancos.findOne({"id" : 1371545775180767232});  
+
+db.bio_tokens.find({"sentence" : 8}, {"_id": 0}).sort({'_id': 1});
+
+db.labels.find({"id" : 8}) 
+
+db.bio_tokens.find({}, {"_id": 0}).sort({'_id': -1}).limit(100);
+
+db.bio_tokens.aggregate( [   { $project: {_id: 0, "sentence": 0, "word": 0, "tag": 1}}, 
+                             { $group: {_id: '$tag', count: { $sum: 1 }}},
+                             { $sort: {"count": -1}} ] )
+
+db.bio_tokens.find({"tag" : 'I-prb', }, {"_id":0}).limit(10)
+
+db.bio_tokens.find({'tag': {$nin: ['B-prb', 'I-prb', 'B-prd', 'I-prd', 'O']}}, {'_id': 0, 'word': 0, 'tag':0}).sort({'_id': -1})
+
+db.bio_tokens.find({'sentence': {$in: [60552,60495,60299,60244,59450,59021,59006,56111,56066,48341,48301,48279,45942,45817,45775,41494,38205,36424,36409,35364,34295,34272,34113,34050,34016,33998,33818,33807,33756,33736,33642,33639,33403,33248,33215,33190,33168,33104,32994,32690,32617,32544,28580,28052,28028,27895,27280,27103,27083,27018,26885,26828,26705,26662,26508,26166,26060,26050,26023,25937,22450,19436,19001,18663,17992,17984,17735,16480,16123,14850,14050,12800,10811,10596,7700,7567,7468,7045,6823,4055,4044,3729,3413,3212,3060,2908,2459,2457,2402,2025,350]}}, {})
+
+//Eliminar mensagens onde a tag está incorreta 
+db.bio_tokens.deleteMany({'sentence': {$in: [60552,60495,60299,60244,59450,59021,59006,56111,56066,48341,48301,48279,45942,45817,45775,41494,38205,36424,36409,35364,34295,34272,34113,34050,34016,33998,33818,33807,33756,33736,33642,33639,33403,33248,33215,33190,33168,33104,32994,32690,32617,32544,28580,28052,28028,27895,27280,27103,27083,27018,26885,26828,26705,26662,26508,26166,26060,26050,26023,25937,22450,19436,19001,18663,17992,17984,17735,16480,16123,14850,14050,12800,10811,10596,7700,7567,7468,7045,6823,4055,4044,3729,3413,3212,3060,2908,2459,2457,2402,2025,350]}})
+
